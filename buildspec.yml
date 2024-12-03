@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Building the Docker image...
+      - docker build -t my-app .
+      - docker tag my-app:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my-app:latest
+  build:
+    commands:
+      - echo Pushing the Docker image to ECR...
+      - docker push 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
+  post_build:
+    commands:
+      - echo Deploying to Amazon ECS...
+      - aws ecs update-service --cluster my-cluster --service my-service --force-new-deployment
+
+env:
+  variables:
+    AWS_ACCOUNT_ID: 147997127717
+    AWS_DEFAULT_REGION: ap-southeast-2
+    IMAGE_REPO_NAME: my-app-hoanglam147
