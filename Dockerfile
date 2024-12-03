@@ -15,4 +15,4 @@ COPY . /app
 RUN mvn clean package -DskipTests
 
 # Command to run tests or the application
-CMD ["mvn", "test"]
+CMD ["sh", "-c", "rm -rf /target/* && mvn test"]
