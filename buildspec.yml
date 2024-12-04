@@ -1,6 +1,11 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - echo "Cleaning up old test reports..."
+      - rm -rf ./target  # Clean up the `target` directory.
+      - echo "Installing dependencies..."
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -10,6 +15,8 @@ phases:
       - docker tag my-app:latest 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
   build:
     commands:
+      - echo "Running Maven build..."
+      - mvn clean test
       - echo Pushing the Docker image to ECR...
       - docker push 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
   post_build:
