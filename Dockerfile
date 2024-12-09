@@ -5,8 +5,7 @@ FROM openjdk:11-jdk-slim
 
 # Install Maven
 RUN apt-get update && \
-    apt-get install -y maven && \
-	yum install -y aws-cli unzip && \
+    apt-get install -y maven awscli unzip && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./script/script.sh /etc/script.sh
