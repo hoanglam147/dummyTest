@@ -54,8 +54,8 @@ public abstract class AbstractConfigTest {
     public static void loadConfiguration() {
         System.out.println("Running @BeforeAll setup...");
         if(variables != null) return;
-        String jsonFilePath = "C:\\Users\\hoal\\Downloads\\vault-P17 - Top 6 tests-1733466316298.json"; // Path to the JSON file
-//        String jsonFilePath = System.getenv("CONFIG_FILE_PATH");
+//        String jsonFilePath = "C:\\Users\\hoal\\Downloads\\vault-P17 - Top 6 tests-1733466316298.json"; // Path to the JSON file
+        String jsonFilePath = System.getenv("CONFIG_FILE_PATH");
         System.out.println(jsonFilePath);
         try {
             // Parse the JSON file
