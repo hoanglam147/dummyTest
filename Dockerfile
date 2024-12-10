@@ -1,7 +1,8 @@
 FROM openjdk:11-jdk-slim
 
-# Set working directory
 
+# Use ENV for runtime variables
+ENV CONFIG_FILE_PATH /app/config.json
 
 # Install Maven
 RUN apt-get update && \
