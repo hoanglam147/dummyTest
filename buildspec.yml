@@ -18,7 +18,7 @@ phases:
       - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO_BASE
       - |
         DOCKER_IMAGES_ARRS=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array  
-        for DOCKER_IMAGES_ARR in DOCKER_IMAGES_ARRS; do
+        for INDEX in "${!DOCKER_IMAGES_ARRS[@]}"; do
           echo "Ensuring repository $IMAGE_NAME exists..."
           aws ecr describe-repositories --repository-names $IMAGE_NAME --region ap-southeast-2 || \
           aws ecr create-repository --repository-name $IMAGE_NAME --region ap-southeast-2
