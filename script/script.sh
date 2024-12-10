@@ -8,12 +8,6 @@ printenv
 echo "Using configuration file: $CONFIG_FILE_PATH"
 
 # Perform operations with CONFIG_FILE_PATH
-if [[ -f "$CONFIG_FILE_PATH" ]]; then
-    echo "Configuration file found at $CONFIG_FILE_PATH"
-else
-    echo "Configuration file not found at $CONFIG_FILE_PATH"
-    exit 1
-fi
 
 echo "Copying config file from S3..."
 aws s3 cp $CONFIG_FILE_PATH /app/config.json || {
