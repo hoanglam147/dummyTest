@@ -1,4 +1,11 @@
 version: 0.2
+env:
+  variables:
+    DOCKER_IMAGES: "app1 app2"
+    CONFIURE_PARAM: "s3://testbuckethoanglam147/p17/a1.json s3://testbuckethoanglam147/p17/a1.json"
+    AWS_ACCOUNT_ID: 147997127717
+    AWS_DEFAULT_REGION: ap-southeast-2
+    ECR_REPO_BASE: "147997127717.dkr.ecr.ap-southeast-2.amazonaws.com"
 
 phases:
   install:
@@ -8,24 +15,77 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com
-      - echo Building the Docker image...
-      - docker build -t my-app .
-      - docker tag my-app:latest 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
+      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO_BASE
   build:
     commands:
-      - echo "Running Maven build..."
-      - echo Pushing the Docker image to ECR...
-      - docker push 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
+      - echo "Building and pushing Docker images..."
+      - |
+        DOCKER_IMAGES_ARR=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array
+        CONFIURE_PARAM_ARR=($CONFIURE_PARAM) # Convert CONFIURE_PARAM to an array
 
+        for INDEX in "${!DOCKER_IMAGES_ARR[@]}"; do
+          IMAGE_NAME=${DOCKER_IMAGES_ARR[$INDEX]}
+          CONFIG_PARAM=${CONFIURE_PARAM_ARR[$INDEX]}
+
+          echo "Building image $IMAGE_NAME with config $CONFIG_PARAM..."
+          docker build --build-arg CONFIG_FILE=$CONFIG_PARAM -t $IMAGE_NAME .
+          echo "Tagging image $IMAGE_NAME..."
+          docker tag $IMAGE_NAME:latest $ECR_REPO_BASE/$IMAGE_NAME:latest
+          echo "Pushing image $IMAGE_NAME to ECR..."
+          docker push $ECR_REPO_BASE/$IMAGE_NAME:latest
+        done
   post_build:
     commands:
       - echo Deploying to Amazon ECS...
-      - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment 
+      - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment
 
-env:
-  variables:
-    AWS_ACCOUNT_ID: 147997127717
-    AWS_DEFAULT_REGION: ap-southeast-2
-    IMAGE_REPO_NAME: my-app-hoanglam147
-    CONFIG_FILE_PATH: /app/config.json
+
+#version: 0.2
+#env:
+#  variables:
+#    ENV_VAR_1: "s3://testbuckethoanglam147/p17/a1.json"
+#    ENV_VAR_2: "s3://testbuckethoanglam147/p17/a1.json"
+#    DOCKER_IMAGES: "app1 app2"
+#    CONFIURE_PARAM: "\"s3://testbuckethoanglam147/p17/a1.json\" \"s3://testbuckethoanglam147/p17/a1.json\""
+#    SECRET_VAR: "parameter-store-key"
+#    AWS_ACCOUNT_ID: 147997127717
+#    AWS_DEFAULT_REGION: ap-southeast-2
+#    IMAGE_REPO_NAME: my-app-hoanglam147
+#    CONFIG_FILE_PATH: /app/config.json
+#
+#phases:
+#  install:
+#    commands:
+#      - echo "Cleaning up old test reports..."
+#      - echo "Installing dependencies..."
+#  pre_build:
+#    commands:
+#      - echo Logging in to Amazon ECR...
+#      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com
+#      - echo Building the Docker image...
+#      - docker build -t my-app .
+#      - docker tag my-app:latest 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
+#  build:
+#    commands:
+#      - echo "Running Maven build..."
+#      - echo Pushing the Docker image to ECR...
+#      - docker push 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/my-app-hoanglam147:latest
+#
+#      - echo "Building and pushing Docker images..."
+#        - |
+#        for IMAGE_NAME in $DOCKER_IMAGES; do
+#          echo "Building image $IMAGE_NAME..."
+#          docker build --build-arg ENV_VAR_1=value1 $IMAGE_NAME .
+#          echo "Tagging image $IMAGE_NAME..."
+#          docker tag $IMAGE_NAME:latest 147997127717.dkr.ecr.ap-southeast-2.amazonaws.com/$IMAGE_NAME:latest
+#          echo "Pushing image $IMAGE_NAME to ECR..."
+#          docker push $ECR_REPO_BASE/$IMAGE_NAME:latest
+#        done
+#
+#
+#  post_build:
+#    commands:
+#      - echo Deploying to Amazon ECS...
+#      - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment
+#
+

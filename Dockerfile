@@ -2,6 +2,7 @@ FROM openjdk:11-jdk-slim
 
 
 # Use ENV for runtime variables
+ARG CONFIG_FILE
 ENV CONFIG_FILE_PATH /app/config.json
 
 # Install Maven
