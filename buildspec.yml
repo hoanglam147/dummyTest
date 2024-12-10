@@ -1,12 +1,11 @@
 version: 0.2
 env:
   variables:
-    DOCKER_IMAGES: "app1 app2"
-    CONFIURE_PARAM: "s3://testbuckethoanglam147/p17/a1.json s3://testbuckethoanglam147/p17/a1.json"
+    DOCKER_IMAGE: "my-app-hoanglam147"
+    CONFIG_FILE_PATHS: "s3://testbuckethoanglam147/p17/a1.json s3://testbuckethoanglam147/p17/a1.json"
     AWS_ACCOUNT_ID: 147997127717
     AWS_DEFAULT_REGION: ap-southeast-2
     ECR_REPO_BASE: "147997127717.dkr.ecr.ap-southeast-2.amazonaws.com"
-
 phases:
   install:
     commands:
@@ -16,36 +15,66 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO_BASE
-      - |
-        DOCKER_IMAGES_ARR=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array
-        for INDEX in "${!DOCKER_IMAGES_ARR[@]}"; do
-          REPOSITORY_NAME=${DOCKER_IMAGES_ARR[$INDEX]}
-          aws ecr describe-repositories --repository-names $REPOSITORY_NAME --region ap-southeast-2 || \
-          aws ecr create-repository --repository-name $REPOSITORY_NAME --region ap-southeast-2
-        done
   build:
     commands:
-      - echo "Building and pushing Docker images..."
-      - |
-        DOCKER_IMAGES_ARR=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array
-        CONFIURE_PARAM_ARR=($CONFIURE_PARAM) # Convert CONFIURE_PARAM to an array
-
-        for INDEX in "${!DOCKER_IMAGES_ARR[@]}"; do
-          IMAGE_NAME=${DOCKER_IMAGES_ARR[$INDEX]}
-          CONFIG_PARAM=${CONFIURE_PARAM_ARR[$INDEX]}
-
-          echo "Building image $IMAGE_NAME with config $CONFIG_PARAM..."
-          docker build --build-arg CONFIG_FILE=$CONFIG_PARAM -t $IMAGE_NAME .
-          echo "Tagging image $IMAGE_NAME..."
-          docker tag $IMAGE_NAME:latest $ECR_REPO_BASE/$IMAGE_NAME:latest
-          echo "Pushing image $IMAGE_NAME to ECR..."
-          docker push $ECR_REPO_BASE/$IMAGE_NAME:latest
-        done
+      - echo "Building Docker image..."
+      - docker build -t $DOCKER_IMAGE .
+      - docker tag $DOCKER_IMAGE:latest $ECR_REPO_BASE/$DOCKER_IMAGE:latest
+      - docker push $ECR_REPO_BASE/$DOCKER_IMAGE:latest
   post_build:
     commands:
-      - echo Deploying to Amazon ECS...
-      - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment
+        - echo Deploying to Amazon ECS...
+        - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment
 
+
+#version: 0.2
+#env:
+#  variables:
+#    DOCKER_IMAGES: "app1 app2"
+#    CONFIURE_PARAM: "s3://testbuckethoanglam147/p17/a1.json s3://testbuckethoanglam147/p17/a1.json"
+#    AWS_ACCOUNT_ID: 147997127717
+#    AWS_DEFAULT_REGION: ap-southeast-2
+#    ECR_REPO_BASE: "147997127717.dkr.ecr.ap-southeast-2.amazonaws.com"
+#
+#phases:
+#  install:
+#    commands:
+#      - echo "Cleaning up old test reports..."
+#      - echo "Installing dependencies..."
+#  pre_build:
+#    commands:
+#      - echo Logging in to Amazon ECR...
+#      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO_BASE
+#      - |
+#        DOCKER_IMAGES_ARR=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array
+#        for INDEX in "${!DOCKER_IMAGES_ARR[@]}"; do
+#          REPOSITORY_NAME=${DOCKER_IMAGES_ARR[$INDEX]}
+#          aws ecr describe-repositories --repository-names $REPOSITORY_NAME --region ap-southeast-2 || \
+#          aws ecr create-repository --repository-name $REPOSITORY_NAME --region ap-southeast-2
+#        done
+#  build:
+#    commands:
+#      - echo "Building and pushing Docker images..."
+#      - |
+#        DOCKER_IMAGES_ARR=($DOCKER_IMAGES)    # Convert DOCKER_IMAGES to an array
+#        CONFIURE_PARAM_ARR=($CONFIURE_PARAM) # Convert CONFIURE_PARAM to an array
+#
+#        for INDEX in "${!DOCKER_IMAGES_ARR[@]}"; do
+#          IMAGE_NAME=${DOCKER_IMAGES_ARR[$INDEX]}
+#          CONFIG_PARAM=${CONFIURE_PARAM_ARR[$INDEX]}
+#
+#          echo "Building image $IMAGE_NAME with config $CONFIG_PARAM..."
+#          docker build --build-arg CONFIG_FILE=$CONFIG_PARAM -t $IMAGE_NAME .
+#          echo "Tagging image $IMAGE_NAME..."
+#          docker tag $IMAGE_NAME:latest $ECR_REPO_BASE/$IMAGE_NAME:latest
+#          echo "Pushing image $IMAGE_NAME to ECR..."
+#          docker push $ECR_REPO_BASE/$IMAGE_NAME:latest
+#        done
+#  post_build:
+#    commands:
+#      - echo Deploying to Amazon ECS...
+#      - aws ecs update-service --cluster DevCluster_hoanglam147 --service myservice147 --force-new-deployment
+#
 
 #version: 0.2
 #env:
