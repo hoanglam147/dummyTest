@@ -16,6 +16,12 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REPO_BASE
+      - |
+        for IMAGE_NAME in $DOCKER_IMAGES; do
+          echo "Ensuring repository $IMAGE_NAME exists..."
+          aws ecr describe-repositories --repository-names $IMAGE_NAME --region ap-southeast-2 || \
+          aws ecr create-repository --repository-name $IMAGE_NAME --region ap-southeast-2
+        done
   build:
     commands:
       - echo "Building and pushing Docker images..."
