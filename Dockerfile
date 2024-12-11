@@ -5,8 +5,7 @@ FROM openjdk:11-jdk-slim
 ENV CONFIG_FILE_PATH /app/config.json
 
 # Install Maven
-RUN apt-get update && \
-    apt-get install -y maven awscli unzip curl && \
+RUN apt-get install -y maven awscli unzip curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./script/script.sh /etc/script.sh
