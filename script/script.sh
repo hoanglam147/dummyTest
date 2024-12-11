@@ -35,7 +35,9 @@ if aws s3 ls "${S3_BUCKET_HISTORY}" > /dev/null 2>&1; then
 else
     echo "Directory does not exist in S3: ${S3_BUCKET_HISTORY}"
 fi
-
+ls ./allure-results/history
 allure generate
+ls ./allure-report
+
 aws s3 cp ./allure-report ${S3_BUCKET_HISTORY} --recursive
 git clean -f -d
