@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.secutix.museum.tickets.Severe_Order_PDF_TicketTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.900 s -- in com.secutix.museum.tickets.Severe_Order_PDF_TicketTest
