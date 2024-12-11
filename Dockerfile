@@ -6,7 +6,7 @@ ENV CONFIG_FILE_PATH /app/config.json
 
 # Install Maven
 RUN apt-get update && \
-    apt-get install -y maven awscli unzip && \
+    apt-get install -y maven awscli unzip curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./script/script.sh /etc/script.sh
