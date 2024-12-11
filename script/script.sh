@@ -20,9 +20,7 @@ aws s3 cp $CONFIG_FILE /app/config.json || {
 echo "Running Maven tests..."
 mvn clean test
 current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
-cd target/
-echo current_datetime
-aws s3 cp ./allure-results ${S3_BUCKET_RESULT}/${current_datetime} --recursive
+
 
 # add allure path
 curl -o allure-latest.zip https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.30.0/allure-commandline-2.30.0.zip
@@ -34,6 +32,9 @@ source ~/.bashrc
 # check version
 allure --version
 cd target/
+echo ${current_datetime}
+aws s3 cp ./allure-results ${S3_BUCKET_RESULT}/${current_datetime} --recursive
+
 if aws s3 ls "${S3_BUCKET_HISTORY}" > /dev/null 2>&1; then
     echo "Directory exists in S3: ${S3_BUCKET}"
     aws s3 cp ${S3_BUCKET_HISTORY} ./allure-results/history/ --recursive
