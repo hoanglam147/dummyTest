@@ -8,7 +8,7 @@ printenv
 echo "Using configuration file: $CONFIG_FILE"
 S3_BUCKET_HISTORY="s3://testbuckethoanglam147/$ENV/allure-report/history"
 S3_BUCKET="s3://testbuckethoanglam147/$ENV/allure-report"
-S3_BUCKET_RESULT="s3://testbuckethoanglam147/$ENV/allure-result/"
+S3_BUCKET_RESULT="s3://testbuckethoanglam147/$ENV/allure-result"
 # Perform operations with CONFIG_FILE_PATH
 
 echo "Copying config file from S3..."
