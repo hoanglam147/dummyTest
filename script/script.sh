@@ -8,6 +8,7 @@ printenv
 echo "Using configuration file: $CONFIG_FILE"
 S3_BUCKET_HISTORY="s3://testbuckethoanglam147/$ENV/allure-report/history"
 S3_BUCKET="s3://testbuckethoanglam147/$ENV/allure-report"
+S3_BUCKET_RESULT="s3://testbuckethoanglam147/$ENV/allure-result"
 # Perform operations with CONFIG_FILE_PATH
 
 echo "Copying config file from S3..."
@@ -38,3 +39,5 @@ fi
 allure --version
 allure generate || { echo "Allure generation failed"; exit 1; }
 aws s3 cp ./allure-report ${S3_BUCKET} --recursive
+current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
+aws s3 cp ./allure-results ${S3_BUCKET_RESULT}/${current_datetime} --recursive
