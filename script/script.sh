@@ -17,7 +17,7 @@ aws s3 cp $CONFIG_FILE /app/config.json || {
 }
 
 echo "Running Maven tests..."
-mvn test
+mvn clean test
 
 # add allure path
 curl -o allure-latest.zip https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.30.0/allure-commandline-2.30.0.zip
