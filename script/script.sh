@@ -44,3 +44,32 @@ fi
 allure --version
 allure generate || { echo "Allure generation failed"; exit 1; }
 aws s3 cp ./allure-report ${S3_BUCKET} --recursive
+
+
+#!/bin/bash
+
+# Trigger Lambda function (if needed)
+# ...
+
+# Set a timeout of 5 minutes (300 seconds)
+timeout 300 aws sns receive --topic-arn arn:aws:sns:ap-southeast-2:147997127717:notification-when-launch-ec2-instance --wait-time-seconds 10
+
+# Check if the `aws sns receive` command timed out
+if [ $? -eq 124 ]; then
+  echo "SNS notification timeout. Exiting."
+  exit 1
+fi
+
+# Parse the message
+message=$(jq -r '.Message' <<< "$REPLY")
+
+# Check the test status
+if [[ $message == *"success"* ]]; then
+  echo "All tests passed. Exiting."
+elif [[ $message == *"failed"* ]]; then
+  # Extract failed tests (adjust the parsing logic as needed)
+
+  echo "Re-running failed tests"
+  # Re-run specific tests based on the failed_tests list
+  # ...
+fi
