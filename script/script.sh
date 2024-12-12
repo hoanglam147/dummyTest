@@ -19,7 +19,7 @@ aws s3 cp $CONFIG_FILE /app/config.json || {
 
 echo "Running Maven tests..."
 mvn clean test
-current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
+
 
 
 # add allure path
@@ -32,6 +32,8 @@ source ~/.bashrc
 # check version
 allure --version
 cd target/
+
+current_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
 echo ${current_datetime}
 aws s3 cp ./allure-results ${S3_BUCKET_RESULT}/${current_datetime} --recursive
 
