@@ -52,17 +52,32 @@ set -e
 
 QUEUE_URL="https://sqs.ap-southeast-2.amazonaws.com/147997127717/quece-trigger-test"
 TIMEOUT=300
+CHECK_INTERVAL=300  # 5 minutes = 300 seconds
 
 echo "Waiting for an SNS notification..."
-message=$(timeout $TIMEOUT aws sqs receive-message \
-    --queue-url $QUEUE_URL \
-    --wait-time-seconds 10 \
-    --query 'Messages[0].Body' \
-    --output text)
 
-if [ -z "$message" ]; then
-    echo "No message received within $TIMEOUT seconds."
-else
-    echo "Received message: $message"
-    # Add logic to handle the message, e.g., trigger ECS tasks, rerun tests, etc.
-fi
+# Track elapsed time
+elapsed_time=0
+
+while [ $elapsed_time -lt $TIMEOUT ]; do
+    message=$(aws sqs receive-message \
+        --queue-url $QUEUE_URL \
+        --wait-time-seconds 10 \
+        --query 'Messages[0].Body' \
+        --output text)
+
+    if [ -z "$message" ]; then
+        echo "No message received in the last 10 seconds."
+    else
+        echo "Received message: $message"
+        # Add logic to handle the message, e.g., trigger ECS tasks, rerun tests, etc.
+    fi
+
+    # Sleep for the next interval before checking again (5 minutes)
+    sleep $CHECK_INTERVAL
+
+    # Increment elapsed time
+    elapsed_time=$((elapsed_time + CHECK_INTERVAL))
+done
+
+echo "Timeout reached, stopping the loop."
