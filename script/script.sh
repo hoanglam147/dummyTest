@@ -52,7 +52,7 @@ aws s3 cp ./allure-report ${S3_BUCKET} --recursive
 # ...
 
 # Set a timeout of 5 minutes (300 seconds)
-timeout 300 aws sns receive --topic-arn arn:aws:sns:ap-southeast-2:147997127717:notification-when-launch-ec2-instance --wait-time-seconds 10
+timeout 300 aws sns receive --topic-arn arn:aws:sns:us-east-1:123456789012:your-topic-arn --wait-time-seconds 10
 
 # Check if the `aws sns receive` command timed out
 if [ $? -eq 124 ]; then
@@ -63,13 +63,17 @@ fi
 # Parse the message
 message=$(jq -r '.Message' <<< "$REPLY")
 
-# Check the test status
-if [[ $message == *"success"* ]]; then
-  echo "All tests passed. Exiting."
-elif [[ $message == *"failed"* ]]; then
-  # Extract failed tests (adjust the parsing logic as needed)
+# Parse the JSON message
+result=$(jq -r '.test_result' <<< "$message")
+reason=$(jq -r '.reason' <<< "$message")
+re_run=$(jq -r '.re_run' <<< "$message")
 
-  echo "Re-running failed tests"
-  # Re-run specific tests based on the failed_tests list
-  # ...
+if [[ $result == "failed" ]]; then
+  echo "Test failed: $reason"
+  if [[ $re_run == "true" ]]; then
+    echo "Re-running tests..."
+    # Run your test scripts here
+  fi
+else
+  echo "Test passed successfully"
 fi
