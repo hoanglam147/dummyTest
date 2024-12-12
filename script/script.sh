@@ -46,34 +46,21 @@ allure generate || { echo "Allure generation failed"; exit 1; }
 aws s3 cp ./allure-report ${S3_BUCKET} --recursive
 
 
-#!/bin/bash
+set -e
 
-# Trigger Lambda function (if needed)
-# ...
+QUEUE_URL="https://sqs.ap-southeast-2.amazonaws.com/147997127717/quece-trigger-test"
+TIMEOUT=300
 
-# Set a timeout of 5 minutes (300 seconds)
-timeout 300 aws sns receive --topic-arn arn:aws:sns:ap-southeast-2:147997127717:notification-when-launch-ec2-instance --wait-time-seconds 10
+echo "Waiting for an SNS notification..."
+message=$(timeout $TIMEOUT aws sqs receive-message \
+    --queue-url $QUEUE_URL \
+    --wait-time-seconds 10 \
+    --query 'Messages[0].Body' \
+    --output text)
 
-# Check if the `aws sns receive` command timed out
-if [ $? -eq 124 ]; then
-  echo "SNS notification timeout. Exiting."
-  exit 1
-fi
-
-# Parse the message
-message=$(jq -r '.Message' <<< "$REPLY")
-
-# Parse the JSON message
-result=$(jq -r '.test_result' <<< "$message")
-reason=$(jq -r '.reason' <<< "$message")
-re_run=$(jq -r '.re_run' <<< "$message")
-
-if [[ $result == "failed" ]]; then
-  echo "Test failed: $reason"
-  if [[ $re_run == "true" ]]; then
-    echo "Re-running tests..."
-    # Run your test scripts here
-  fi
+if [ -z "$message" ]; then
+    echo "No message received within $TIMEOUT seconds."
 else
-  echo "Test passed successfully"
+    echo "Received message: $message"
+    # Add logic to handle the message, e.g., trigger ECS tasks, rerun tests, etc.
 fi
