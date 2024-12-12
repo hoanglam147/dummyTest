@@ -52,7 +52,7 @@ aws s3 cp ./allure-report ${S3_BUCKET} --recursive
 # ...
 
 # Set a timeout of 5 minutes (300 seconds)
-timeout 300 aws sns receive --topic-arn arn:aws:sns:us-east-1:123456789012:your-topic-arn --wait-time-seconds 10
+timeout 300 aws sns receive --topic-arn arn:aws:sns:ap-southeast-2:147997127717:notification-when-launch-ec2-instance --wait-time-seconds 10
 
 # Check if the `aws sns receive` command timed out
 if [ $? -eq 124 ]; then
