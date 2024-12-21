@@ -6,9 +6,11 @@ printenv
 
 # Use the CONFIG_FILE_PATH environment variable
 echo "Using configuration file: $CONFIG_FILE"
-S3_BUCKET_HISTORY="s3://testbuckethoanglam147/$ENV/allure-report/history"
-S3_BUCKET="s3://testbuckethoanglam147/$ENV/allure-report"
-S3_BUCKET_RESULT="s3://testbuckethoanglam147/$ENV/allure-result"
+S3_BUCKET="s3://testbuckethoanglam147/"
+S3_BUCKET_ALLURE_REPORT= "${S3_BUCKET}${ENV}/allure-report"
+S3_BUCKET_HISTORY="${S3_BUCKET_ALLURE_REPORT}/history"
+
+S3_BUCKET_RESULT= "${S3_BUCKET}${ENV}/allure-result"
 # Perform operations with CONFIG_FILE_PATH
 
 echo "Copying config file from S3..."
@@ -52,7 +54,7 @@ set -e
 
 QUEUE_URL="https://sqs.ap-southeast-2.amazonaws.com/147997127717/quece-trigger-test"
 TIMEOUT=300
-CHECK_INTERVAL=300  # 5 minutes = 300 seconds
+CHECK_INTERVAL=30  # 5 minutes = 300 seconds
 
 echo "Waiting for an SNS notification..."
 

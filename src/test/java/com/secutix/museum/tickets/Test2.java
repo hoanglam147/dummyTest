@@ -1,8 +1,10 @@
 package com.secutix.museum.tickets;
 import com.secutix.museum.AbstractConfigTest;
+import com.secutix.rule.RetryExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-//@ExtendWith(RetryExtension.class)
+@ExtendWith(RetryExtension.class)
 public class Test2 extends AbstractConfigTest {
     @Test
     public void testPostEndpoint() {
