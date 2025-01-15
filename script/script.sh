@@ -5,7 +5,7 @@ echo "Environment variables:"
 printenv
 
 S3_BUCKET="s3://testbuckethoanglam147/"
-CONFIG_FILE="${S3_BUCKET}/p17/a1.json"
+CONFIG_FILE="${S3_BUCKET}p17/a1.json"
 echo "Using configuration file: $CONFIG_FILE"
 # Perform operations with CONFIG_FILE_PATH
 echo "Copying config file from S3..."
