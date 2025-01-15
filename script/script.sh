@@ -4,7 +4,7 @@ set -e  # Stop the script if any command fails
 echo "Environment variables:"
 printenv
 
-S3_BUCKET="s3://testbuckethoanglam147/"
+S3_BUCKET="s3://hoanglam147testbucket/"
 CONFIG_FILE="${S3_BUCKET}p17/a1.json"
 echo "Using configuration file: $CONFIG_FILE"
 # Perform operations with CONFIG_FILE_PATH
